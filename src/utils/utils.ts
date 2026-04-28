@@ -1,3 +1,9 @@
+// @ts-ignore
+import oracledb from "oracledb"
+import { dbConfig } from '../db/config.js'
+
+// @ts-ignore
+import { bcrypt } from "bcrypt";
 import jwt from 'jsonwebtoken'
     
 export const req_field_validator = (body: Record<string, unknown>, req_field_list: string[]) => {
@@ -54,4 +60,30 @@ export const jwt_token_generator = (user: User) => {
         refresh_token,
         access_token
     }
+}
+
+export const db_error_handler = async(error: unknown, model: string) => {
+    try {
+        const rollbackConnection = await oracledb.getConnection(dbConfig);
+        await rollbackConnection.rollback();
+    } catch (error) {
+        return {
+            status: 500,
+            data: { [model]: null },
+            error: error instanceof Error ? error.message : "Unknown error",
+            message: "Error during rollback"
+        }
+    }
+
+    return {
+        status: 500,
+        data: { [model]: null },
+        error: error instanceof Error ? error.message : "Unknown error",
+        message: "Internal server error"
+    }
+}
+
+export const password_encryptor = async(password: string) => {
+    const saltRounds = parseInt(process.env.SALT_ROUNDS || "10");
+    return await bcrypt.hash(password, saltRounds);
 }
