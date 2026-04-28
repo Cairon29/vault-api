@@ -10,7 +10,7 @@ interface Data {
     note: Note | Note[] | null,
 }
 
-interface ModelResponse {
+interface NotesModelResponse {
     status: number,
     data: Data,
     error: string
@@ -20,5 +20,5 @@ interface ModelResponse {
 export type {
     Note,
     Data,
-    ModelResponse
+    NotesModelResponse
 }
