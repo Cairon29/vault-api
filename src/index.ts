@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 import { AuthRouter } from "./routes/auth.js";
 import { NotesRouter } from "./routes/notes.js";
+import { UserRouter } from "./routes/user.js";
 
 dotenv.config();
 
@@ -10,8 +11,10 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
+
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/notes', NotesRouter);
+app.use('/api/v1/users', UserRouter);
 
 app.get("/", (_req, res) => res.send("Hello World!"));
 
