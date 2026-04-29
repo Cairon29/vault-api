@@ -65,7 +65,35 @@ export class UserModel {
         } catch (error) {
             return await db_error_handler(error, "user");
         }
-    } 
+    }
+    static getByEmail = async(email: string): Promise<UsersModelResponse> => {
+        let connection;
+        try {
+            connection = await oracledb.getConnection(dbConfig)
+            const result = await connection.execute(
+                'SELECT * FROM users WHERE email = :email',
+                [email],                
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+            if (result.rows.length === 0) {
+                return {
+                    data: { user: null },
+                    error: "",
+                    status: 404,
+                    message: "User not found"
+                };
+            }
+
+            return {
+                data: result.rows,
+                error: "",
+                status: 200,
+                message: "User retrieved"
+            };
+        } catch (error) {
+            return await db_error_handler(error, "user");
+        }
+    }
     static create = async (user: User): Promise<UsersModelResponse> => {    
         // Oracle logic for creating a user
         let connection;
